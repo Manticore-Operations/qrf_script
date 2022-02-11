@@ -39,43 +39,27 @@ _waitTime = 120; //Time in seconds that the script will wait until forcefully de
 _roadDetectionRange = 100; //How far from the given spawn position should the script look for a road. If a road is found the truck will spawn on it.
 
 // ERROR HANDLING //
-if (!(typeName _spawnPos in ["STRING", "ARRAY"])) exitWith {
-	["QRF Truck ERROR: 3rd paramater needs to be type STRING or ARRAY. You gave %1", typeName _spawnPos] call BIS_fnc_error;
+// Users are likely not experienced with Arma coding. Provide better debug information along with default errors.
+if (objNull in [_spawnPos, _targetPos]) exitWith {
+	["QRF Truck: ERROR while parsing position parameters!"] call BIS_fnc_error;
 };
 
-if (!(typeName _targetPos in ["STRING", "ARRAY"])) exitWith {
-	["QRF Truck ERROR: 4th paramater needs to be type STRING or ARRAY. You gave %1", typeName _spawnPos] call BIS_fnc_error;
-};
-
-if (_spawnPos isEqualTo objNull) exitWith {
-	["QRF Truck ERROR: unable to parse second 3rd parameter"] call BIS_fnc_error;
-};
-
-if (_targetPos isEqualTo objNull) exitWith {
-	["QRF Truck ERROR: unable to parse second 4th parameter"] call BIS_fnc_error;
+if (typeName _vehicleType != "STRING" or _vehicleType isEqualTo objNull) exitWith {
+	["QRF Truck: ERROR no vehicle given!"] call BIS_fnc_error;
 };
 
 if (count _units < 1 or (_units isEqualTo objNull)) exitWith {
-	["QRF Truck ERROR: 1st paramater cannot be empty"] call BIS_fnc_error;
+	["QRF Truck: ERROR no units provided!"] call BIS_fnc_error;
 };
 
-if (_vehicleType isEqualTo objNull) exitWith {
-	["QRF Truck ERROR: 2nd paramater cannot be empty"] call BIS_fnc_error;
-};
-
-if (typeName _vehicleType != "STRING") exitWith {
-	["QRF Truck ERROR: 2nd paramater must be a string"] call BIS_fnc_error;
-};
-
-// Find a safe position on a road
+// If markers are used convert to positions
 if (typeName _spawnPos == "STRING") then {
 	_spawnPos = getMarkerPos _spawnPos;
 };
-
 if (typeName _targetPos == "STRING") then {
 	_targetPos = getMarkerPos _targetPos;
 };
- 
+
 _checkForDriver = {
 	_vehicle = _this select 0;
 
